@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using GithubAPIQuery;
-using Newtonsoft.Json;
 using Tests.Data;
 using Xunit;
 
@@ -15,16 +14,44 @@ namespace Tests
         {
             var repositories = new TestRepositoryBuilder().Build();
             var factory = new TestSearchFactory(repositories);
-            
+
             var searcher = new RepositorySearch(factory);
-            var results = searcher.RunSearch("raven");
+            var results = searcher.RunSearch(TestRepositoryBuilder.DefaultCriteria);
 
             Assert.NotEmpty(results);
             Assert.Equal(repositories.Length, results.Length);
         }
 
         [Fact]
-        public void RecognisesRateLimitExceededMessage()
+        public void RepositorySearcherCanReturnEmptyResults()
+        {
+            var repositories = new TestRepositoryBuilder().Build();
+            var factory = new TestSearchFactory(repositories);
+
+            var searcher = new RepositorySearch(factory);
+            var results = searcher.RunSearch("this-will-not-be-found");
+
+            Assert.Empty(results);
+        }
+
+        [Fact]
+        public void RepositorySearcherFailsWhenRateLimitExceeded()
+        {
+            var repositories = new TestRepositoryBuilder()
+                .WithTotalCount(10)
+                .WithApiLimit(9)
+                .Build();
+            var factory = new TestSearchFactory(repositories);
+
+            var searcher = new RepositorySearch(factory);
+
+            // Expecting an ApplicationException aggregated by the TPL.
+            var aggregate = Assert.Throws<AggregateException>(() => searcher.RunSearch(TestRepositoryBuilder.DefaultCriteria));
+            Assert.IsType<ApplicationException>(aggregate.InnerException);
+        }
+
+        [Fact]
+        public void ApiRateLimitExceededMessageRecognised()
         {
             var rateLimit = File.ReadAllText("rate-limit-message.json");
             Assert.True(rateLimit.IsApiRateLimitWarning());
@@ -52,35 +79,6 @@ namespace Tests
             {
                 Assert.Equal(i, counter.NextSearchPageNumber());
             }
-        }
-
-        [Fact]
-        public void TestRepositoryPagesSerialiseAsExpected()
-        {
-            var builder = new TestRepositoryBuilder();
-            var repositories = builder.Build();
-
-            var json = JsonConvert.SerializeObject(repositories);
-            Console.WriteLine(json);
-
-            var deserialised = JsonConvert.DeserializeObject<TestRepository[]>(json);
-            Assert.Equal(repositories.Length, deserialised.Length);
-
-            var empty = builder.Empty;
-            Assert.Equal(builder.TotalCount, empty.TotalCount);
-            Assert.Equal(0, empty.Items.Length);
-        }
-
-        [Fact]
-        public void TestSearchFactoryReturnsWorkingFakeSearches()
-        {
-            var factory = new TestSearchFactory(new TestRepositoryBuilder().Build());
-            var search = factory.GetSearches(1, "raven", 100).Single();
-
-            var json = search.GetPage().Result;
-            var details = RepositoryDetails.FromJson(json).ToArray();
-
-            Assert.Equal(100, details.Length);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,15 +35,15 @@ namespace GithubAPIQuery
         ///     The approach here is use N independent tasks that each retreive a separate page.
         ///     After the page is retreived the task will get other pages until the whole job is complete.
         /// </remarks>
-        public RepositoryDetails[] RunSearch(string criteria, int maxConcurrentQueries = 10, int resultsPerPage = 100)
+        public RepositoryDetails[] RunSearch(string criteria, int concurrentQueryCount = 10, int resultsPerPage = 100)
         {
             if (string.IsNullOrWhiteSpace(criteria)) throw new ArgumentException("Criteria required.", "criteria");
-            if (maxConcurrentQueries < 1) throw new ArgumentException("Must have at least one query.", "maxConcurrentQueries");
+            if (concurrentQueryCount < 1) throw new ArgumentException("Must have at least one query.", "concurrentQueryCount");
             if (_searching) throw new ApplicationException("Search already in progress.");
             _searching = true;
 
             _pageCounter = new SearchPageCounter();
-            var searches = GetRepositorySearches(criteria, maxConcurrentQueries, resultsPerPage);
+            var searches = _factory.GetSearches(concurrentQueryCount, criteria, resultsPerPage);
 
             var tasks = searches.Select(search => Task.Factory.StartNew(() =>
             {
@@ -66,13 +65,6 @@ namespace GithubAPIQuery
             Task.WaitAll(tasks);
             _searching = false;
             return _results.OrderBy(x => x.Name).ToArray();
-        }
-
-        private IEnumerable<GithubApiPageSearch> GetRepositorySearches(string criteria, int maxConcurrentQueries, int resultsPerPage)
-        {
-            return Enumerable
-                .Range(1, maxConcurrentQueries)
-                .Select(i => new GithubApiPageSearch(criteria, resultsPerPage));
         }
 
         /// <summary>

@@ -20,14 +20,28 @@ namespace Tests.Data
 
         public Task<string> GetPage(int page = 1)
         {
-            var repositories = _repositories
+            if (ApiLimitExceeded(page)) return Task.Run(() => JsonConvert.SerializeObject(new ApiLimitExceeded()));
+            var repositories = GetRepositories(page);
+            var result = new TestRepositoryPage {TotalCount = _repositories.Length, Items = repositories};
+            return Task.Run(() => JsonConvert.SerializeObject(result));
+        }
+
+        private TestRepository[] GetRepositories(int page)
+        {
+            return _repositories
                 .Where(x => x.Name != null && x.Name.ToLowerInvariant().Contains(_criteria.ToLowerInvariant()))
                 .Skip(_resultsPerPage*(page - 1))
                 .Take(_resultsPerPage)
                 .ToArray();
+        }
 
-            var result = new TestRepositoryPage {TotalCount = _repositories.Length, Items = repositories};
-            return Task.Run(() => JsonConvert.SerializeObject(result));
+        private bool ApiLimitExceeded(int page)
+        {
+            return _repositories
+                .Skip(_resultsPerPage*(page - 1))
+                .Take(_resultsPerPage)
+                .OfType<ApiLimitExceeded>()
+                .Any();
         }
     }
 }

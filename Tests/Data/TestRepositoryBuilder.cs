@@ -4,9 +4,11 @@ namespace Tests.Data
 {
     public class TestRepositoryBuilder
     {
+        public const string DefaultCriteria = "raven";
+
         public TestRepositoryBuilder()
         {
-            Criteria = "raven";
+            Criteria = DefaultCriteria;
             TotalCount = 801;
         }
 
@@ -19,23 +21,36 @@ namespace Tests.Data
 
         public bool Incomplete { get; set; }
         public int TotalCount { get; set; }
+        public int ApiLimit { get; set; }
 
         public TestRepository[] Build()
         {
             return Enumerable
                 .Range(1, !Incomplete ? TotalCount : TotalCount - 1)
-                .Select(i => new TestRepository {Name = Criteria + " " + i, Description = "Description of " + Criteria + i})
+                .Select(i =>
+                    ApiLimit <= 0 || i <= ApiLimit
+                        ? new TestRepository {Name = Criteria + " " + i, Description = "Description of " + Criteria + i}
+                        : new ApiLimitExceeded()
+                )
                 .ToArray();
         }
 
-        public void MatchingOn(string criteria)
+        public TestRepositoryBuilder MatchingOn(string criteria)
         {
             Criteria = criteria;
+            return this;
         }
 
-        public void WithTotalCount(int totalCount)
+        public TestRepositoryBuilder WithApiLimit(int limit)
+        {
+            ApiLimit = limit;
+            return this;
+        }
+
+        public TestRepositoryBuilder WithTotalCount(int totalCount)
         {
             TotalCount = totalCount;
+            return this;
         }
     }
 }
