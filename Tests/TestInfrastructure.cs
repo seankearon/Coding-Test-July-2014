@@ -54,9 +54,7 @@ namespace Tests
             var search = factory.GetSearches(1, TestRepositoryBuilder.DefaultCriteria, 100).Single();
 
             var json = search.GetPage().Result;
-            var details = RepositoryDetails.FromJson(json).ToArray();
-
-            Assert.Equal(100, details.Length);
+            Assert.True(json.IsApiRateLimitWarning());
         }
     }
 }
