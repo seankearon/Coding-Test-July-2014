@@ -8,7 +8,7 @@ namespace Tests
     public class IntegrationTests
     {
         [Fact]
-        public void RepositorySearchReturnsSpecifiedNumberOfResults()
+        public void PageSearchReturnsSpecifiedNumberOfResults()
         {
             var query = new GithubPageSearch("raven", 4);
             var json = query.GetPage().Result;
@@ -19,7 +19,7 @@ namespace Tests
         }
 
         [Fact]
-        public void RepositorySearcherReturnsResults()
+        public void RepositorySearcherReturnsAllResults()
         {
             var searcher = new RepositorySearch();
             var results = searcher.RunSearch("raven");

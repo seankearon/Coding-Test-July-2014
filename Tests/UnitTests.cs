@@ -10,7 +10,7 @@ namespace Tests
     public class UnitTests
     {
         [Fact]
-        public void RepositorySearcherReturnsExpectedResults()
+        public void RepositorySearcherReturnsAllResults()
         {
             var repositories = new TestRepositoryBuilder().Build();
             var factory = new TestSearchFactory(repositories);
@@ -23,7 +23,7 @@ namespace Tests
         }
 
         [Fact]
-        public void RepositorySearcherCanReturnEmptyResults()
+        public void RepositorySearcherCanReturnEmptyResultSets()
         {
             var repositories = new TestRepositoryBuilder().Build();
             var factory = new TestSearchFactory(repositories);
