@@ -1,7 +1,12 @@
 Coding-Test-July-2014
 =====================
 
-Contains the results of a coding test.  The brief for which was:
+Contains the results of a coding test.  Please note the following issue:
+
+https://github.com/seankearon/Coding-Test-July-2014/issues/1
+
+
+The brief for which was:
 
 Using GitHub public API, Repositories Search 
 
