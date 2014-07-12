@@ -5,7 +5,7 @@ namespace Tests.Data
     /// <summary>
     ///     Pretend to be a Github API exceeded error message.
     /// </summary>
-    public class ApiLimitExceeded : TestRepository
+    public class ApiLimitExceeded : Repository
     {
         private const string _message = "API rate limit exceeded for 1.2.3.4. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)";
         private const string _documentationUrl = @"https://developer.github.com/v3/#rate-limiting";

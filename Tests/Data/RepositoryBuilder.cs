@@ -2,11 +2,11 @@ using System.Linq;
 
 namespace Tests.Data
 {
-    public class TestRepositoryBuilder
+    public class RepositoryBuilder
     {
         public const string DefaultCriteria = "raven";
 
-        public TestRepositoryBuilder()
+        public RepositoryBuilder()
         {
             Criteria = DefaultCriteria;
             TotalCount = 801;
@@ -14,40 +14,40 @@ namespace Tests.Data
 
         public string Criteria { get; set; }
 
-        public TestRepositoryPage Empty
+        public RepositoryPage Empty
         {
-            get { return new TestRepositoryPage {TotalCount = TotalCount}; }
+            get { return new RepositoryPage {TotalCount = TotalCount}; }
         }
 
         public bool Incomplete { get; set; }
         public int TotalCount { get; set; }
         public int ApiLimit { get; set; }
 
-        public TestRepository[] Build()
+        public Repository[] Build()
         {
             return Enumerable
                 .Range(1, !Incomplete ? TotalCount : TotalCount - 1)
                 .Select(i =>
                     ApiLimit <= 0 || i <= ApiLimit
-                        ? new TestRepository {Name = Criteria + " " + i, Description = "Description of " + Criteria + i}
+                        ? new Repository {Name = Criteria + " " + i, Description = "Description of " + Criteria + i}
                         : new ApiLimitExceeded()
                 )
                 .ToArray();
         }
 
-        public TestRepositoryBuilder MatchingOn(string criteria)
+        public RepositoryBuilder MatchingOn(string criteria)
         {
             Criteria = criteria;
             return this;
         }
 
-        public TestRepositoryBuilder WithApiLimit(int limit)
+        public RepositoryBuilder WithApiLimit(int limit)
         {
             ApiLimit = limit;
             return this;
         }
 
-        public TestRepositoryBuilder WithTotalCount(int totalCount)
+        public RepositoryBuilder WithTotalCount(int totalCount)
         {
             TotalCount = totalCount;
             return this;

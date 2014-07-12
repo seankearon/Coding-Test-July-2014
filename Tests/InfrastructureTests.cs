@@ -15,13 +15,13 @@ namespace Tests
         [Fact]
         public void TestRepositoryPagesSerialiseAsExpected()
         {
-            var builder = new TestRepositoryBuilder();
+            var builder = new RepositoryBuilder();
             var repositories = builder.Build();
 
             var json = JsonConvert.SerializeObject(repositories);
             Console.WriteLine(json);
 
-            var deserialised = JsonConvert.DeserializeObject<TestRepository[]>(json);
+            var deserialised = JsonConvert.DeserializeObject<Repository[]>(json);
             Assert.Equal(repositories.Length, deserialised.Length);
 
             var empty = builder.Empty;
@@ -40,8 +40,8 @@ namespace Tests
         [Fact]
         public void TestSearchFactoryReturnsWorkingFakeSearches()
         {
-            var factory = new TestSearchFactory(new TestRepositoryBuilder().Build());
-            var search = factory.GetSearches(1, TestRepositoryBuilder.DefaultCriteria, 100).Single();
+            var factory = new SearchFactory(new RepositoryBuilder().Build());
+            var search = factory.GetSearches(1, RepositoryBuilder.DefaultCriteria, 100).Single();
 
             var json = search.GetPage().Result;
             var details = RepositoryDetails.FromJson(json).ToArray();
@@ -52,9 +52,9 @@ namespace Tests
         [Fact]
         public void TestSearchFactoryCanModelsTheApiLimit()
         {
-            var builder = new TestRepositoryBuilder().WithTotalCount(10).WithApiLimit(9);
-            var factory = new TestSearchFactory(builder.Build());
-            var search = factory.GetSearches(1, TestRepositoryBuilder.DefaultCriteria, 100).Single();
+            var builder = new RepositoryBuilder().WithTotalCount(10).WithApiLimit(9);
+            var factory = new SearchFactory(builder.Build());
+            var search = factory.GetSearches(1, RepositoryBuilder.DefaultCriteria, 100).Single();
 
             var json = search.GetPage().Result;
             Assert.True(json.IsApiRateLimitWarning());

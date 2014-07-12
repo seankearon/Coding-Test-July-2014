@@ -5,11 +5,11 @@ using GithubAPIQuery;
 
 namespace Tests.Data
 {
-    public class TestSearchFactory : IPageSearchFactory
+    public class SearchFactory : IPageSearchFactory
     {
-        private readonly TestRepository[] _repositories;
+        private readonly Repository[] _repositories;
 
-        public TestSearchFactory(TestRepository[] repositories)
+        public SearchFactory(Repository[] repositories)
         {
             _repositories = repositories;
         }
@@ -17,7 +17,7 @@ namespace Tests.Data
         public IEnumerable<IPageSearch> GetSearches(int count, string criteria, int resultsPerPage)
         {
             if (count < 1) throw new ArgumentOutOfRangeException("count", "Must get at least one search.");
-            return Enumerable.Range(1, count).Select(x => new TestPageSearch(criteria, resultsPerPage, _repositories));
+            return Enumerable.Range(1, count).Select(x => new PageSearch(criteria, resultsPerPage, _repositories));
         }
     }
 }

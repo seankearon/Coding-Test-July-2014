@@ -5,13 +5,13 @@ using Newtonsoft.Json;
 
 namespace Tests.Data
 {
-    public class TestPageSearch : IPageSearch
+    public class PageSearch : IPageSearch
     {
         private readonly string _criteria;
-        private readonly TestRepository[] _repositories;
+        private readonly Repository[] _repositories;
         private readonly int _resultsPerPage;
 
-        public TestPageSearch(string criteria, int resultsPerPage, TestRepository[] repositories)
+        public PageSearch(string criteria, int resultsPerPage, Repository[] repositories)
         {
             _criteria = criteria;
             _resultsPerPage = resultsPerPage;
@@ -22,11 +22,11 @@ namespace Tests.Data
         {
             if (ApiLimitExceeded(page)) return Task.Run(() => JsonConvert.SerializeObject(new ApiLimitExceeded()));
             var repositories = GetRepositories(page);
-            var result = new TestRepositoryPage {TotalCount = _repositories.Length, Items = repositories};
+            var result = new RepositoryPage {TotalCount = _repositories.Length, Items = repositories};
             return Task.Run(() => JsonConvert.SerializeObject(result));
         }
 
-        private TestRepository[] GetRepositories(int page)
+        private Repository[] GetRepositories(int page)
         {
             return _repositories
                 .Where(x => x.Name != null && x.Name.ToLowerInvariant().Contains(_criteria.ToLowerInvariant()))

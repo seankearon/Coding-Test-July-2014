@@ -12,11 +12,11 @@ namespace Tests
         [Fact]
         public void RepositorySearcherReturnsAllResults()
         {
-            var repositories = new TestRepositoryBuilder().Build();
-            var factory = new TestSearchFactory(repositories);
+            var repositories = new RepositoryBuilder().Build();
+            var factory = new SearchFactory(repositories);
 
             var searcher = new RepositorySearch(factory);
-            var results = searcher.RunSearch(TestRepositoryBuilder.DefaultCriteria);
+            var results = searcher.SearchFor(RepositoryBuilder.DefaultCriteria);
 
             Assert.NotEmpty(results);
             Assert.Equal(repositories.Length, results.Length);
@@ -25,11 +25,11 @@ namespace Tests
         [Fact]
         public void RepositorySearcherCanReturnEmptyResultSets()
         {
-            var repositories = new TestRepositoryBuilder().Build();
-            var factory = new TestSearchFactory(repositories);
+            var repositories = new RepositoryBuilder().Build();
+            var factory = new SearchFactory(repositories);
 
             var searcher = new RepositorySearch(factory);
-            var results = searcher.RunSearch("this-will-not-be-found");
+            var results = searcher.SearchFor("this-will-not-be-found");
 
             Assert.Empty(results);
         }
@@ -37,16 +37,16 @@ namespace Tests
         [Fact]
         public void RepositorySearcherFailsWhenRateLimitExceeded()
         {
-            var repositories = new TestRepositoryBuilder()
+            var repositories = new RepositoryBuilder()
                 .WithTotalCount(10)
                 .WithApiLimit(9)
                 .Build();
-            var factory = new TestSearchFactory(repositories);
+            var factory = new SearchFactory(repositories);
 
             var searcher = new RepositorySearch(factory);
 
             // Expecting an ApplicationException aggregated by the TPL.
-            var aggregate = Assert.Throws<AggregateException>(() => searcher.RunSearch(TestRepositoryBuilder.DefaultCriteria));
+            var aggregate = Assert.Throws<AggregateException>(() => searcher.SearchFor(RepositoryBuilder.DefaultCriteria));
             Assert.IsType<ApplicationException>(aggregate.InnerException);
         }
 

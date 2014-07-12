@@ -10,7 +10,7 @@ namespace Tests
         [Fact]
         public void PageSearchReturnsSpecifiedNumberOfResults()
         {
-            var query = new GithubPageSearch("raven", 4);
+            var query = new GithubPageSearch("met", 4);
             var json = query.GetPage().Result;
             var details = RepositoryDetails.FromJson(json).ToArray();
 
@@ -22,7 +22,7 @@ namespace Tests
         public void RepositorySearcherReturnsAllResults()
         {
             var searcher = new RepositorySearch();
-            var results = searcher.RunSearch("raven");
+            var results = searcher.SearchFor("met");
 
             Console.WriteLine("Found {0} repositories.", results.Length);
             foreach (var repository in results)
@@ -30,7 +30,7 @@ namespace Tests
                 Console.WriteLine("    {0} - {1}", repository.Name, repository.Description);
             }
 
-            var metadata = new GithubPageSearch("raven", 1).GetPage().Result;
+            var metadata = new GithubPageSearch("met", 1).GetPage().Result;
             if (metadata.IsApiRateLimitWarning()) Assert.True(false, "The API limit was exceeded before the test completed.");
 
             var expectedResultCount = metadata.GetApiTotalCount();

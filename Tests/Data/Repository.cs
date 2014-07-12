@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Tests.Data
 {
-    public class TestRepository
+    public class Repository
     {
         [JsonProperty(PropertyName = "description")]
         public string Description { get; set; }
