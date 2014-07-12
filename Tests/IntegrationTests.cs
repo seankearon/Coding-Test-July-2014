@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Tests
 {
-    public class Integration
+    public class IntegrationTests
     {
         [Fact]
         public void RepositorySearchReturnsSpecifiedNumberOfResults()
