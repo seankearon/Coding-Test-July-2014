@@ -46,8 +46,8 @@ namespace Tests
             {
                 // User agent header required: https://developer.github.com/v3/#user-agent-required
                 client.DefaultRequestHeaders.Add("User-Agent", "Seans-Code");
-                var task = client.GetAsync(url).Result;
-                var body = task.Content.ReadAsStringAsync().Result;
+                HttpResponseMessage task = client.GetAsync(url).Result;
+                string body = task.Content.ReadAsStringAsync().Result;
                 Console.WriteLine(body);
             }
         }
@@ -56,8 +56,8 @@ namespace Tests
         public void RepositoryQueryReturnsValues()
         {
             var query = new GithubApiPageSearch("raven");
-            var json = query.GetPage().Result;
-            foreach (var detail in RepositoryDetails.FromJson(json))
+            string json = query.GetPage().Result;
+            foreach (RepositoryDetails detail in RepositoryDetails.FromJson(json))
             {
                 Console.WriteLine(detail.Name + " - " + detail.Description);
             }
@@ -68,9 +68,9 @@ namespace Tests
         {
             var shared = new ConcurrentDictionary<string, bool>();
 
-            Action<string> run = (s) =>
+            Action<string> run = s =>
             {
-                var hasResults = Get(s);
+                bool hasResults = Get(s);
                 shared.AddOrUpdate(s, true, (k, v) => hasResults);
             };
 

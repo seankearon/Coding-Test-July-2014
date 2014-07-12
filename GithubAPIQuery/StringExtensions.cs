@@ -33,7 +33,7 @@ namespace GithubAPIQuery
             if (message == null) return false;
             var value = message.Value<string>();
             if (string.IsNullOrEmpty(value)) return false;
-            return value.ToLower().StartsWith("api rate limit exceeded");
+            return value.ToLowerInvariant().StartsWith("api rate limit exceeded");
         }
     }
 }

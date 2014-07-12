@@ -11,9 +11,9 @@ namespace Tests
         public void RepositorySearchReturnsSpecifiedNumberOfResults()
         {
             var query = new GithubApiPageSearch("raven", 4);
-            var json = query.GetPage().Result;
+            string json = query.GetPage().Result;
 
-            var details = RepositoryDetails.FromJson(json).ToArray();
+            RepositoryDetails[] details = RepositoryDetails.FromJson(json).ToArray();
             Assert.Equal(4, details.Length);
         }
 
@@ -21,16 +21,16 @@ namespace Tests
         public void RepositorySearcherReturnsResults()
         {
             var searcher = new RepositorySearch();
-            var results = searcher.RunSearch("raven");
+            RepositoryDetails[] results = searcher.RunSearch("raven");
 
             Console.WriteLine("Found {0} repositories.", results.Length);
-            foreach (var repository in results)
+            foreach (RepositoryDetails repository in results)
             {
                 Console.WriteLine("    {0} - {1}", repository.Name, repository.Description);
             }
 
-            var metadata = new GithubApiPageSearch("raven", 1).GetPage().Result;
-            var expectedResultCount = metadata.GetApiTotalCount();
+            string metadata = new GithubApiPageSearch("raven", 1).GetPage().Result;
+            int expectedResultCount = metadata.GetApiTotalCount();
             Assert.Equal(expectedResultCount, results.Length);
         }
     }
