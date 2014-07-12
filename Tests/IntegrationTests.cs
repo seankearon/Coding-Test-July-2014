@@ -12,8 +12,9 @@ namespace Tests
         {
             var query = new GithubPageSearch("raven", 4);
             var json = query.GetPage().Result;
-
             var details = RepositoryDetails.FromJson(json).ToArray();
+
+            if (json.IsApiRateLimitWarning()) Assert.True(false, "The API limit was exceeded before the test completed.");
             Assert.Equal(4, details.Length);
         }
 
@@ -30,6 +31,8 @@ namespace Tests
             }
 
             var metadata = new GithubPageSearch("raven", 1).GetPage().Result;
+            if (metadata.IsApiRateLimitWarning()) Assert.True(false, "The API limit was exceeded before the test completed.");
+
             var expectedResultCount = metadata.GetApiTotalCount();
             Assert.Equal(expectedResultCount, results.Length);
         }
