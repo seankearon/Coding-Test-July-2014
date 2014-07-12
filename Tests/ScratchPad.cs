@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,10 +9,34 @@ using Xunit;
 namespace Tests
 {
     /// <summary>
-    /// Just for working up ideas.
+    ///     Just for working up ideas.
     /// </summary>
     public class ScratchPad
     {
+        public static bool Get(string s)
+        {
+            Thread.Sleep(500);
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff ") + s);
+            return true;
+        }
+
+        [Fact]
+        public void ErrorsAreSurfaced()
+        {
+            var tasks = new[]
+            {
+                Task.Run(() => Console.WriteLine("Hello!")),
+                Task.Run(() =>
+                {
+                    Console.WriteLine("I'm bad...");
+                    throw new Exception();
+                }),
+                Task.Run(() => Console.WriteLine("Goodbye!"))
+            };
+
+            Assert.Throws<AggregateException>(() => Task.WaitAll(tasks));
+        }
+
         [Fact]
         public void GetFromApi()
         {
@@ -38,34 +63,10 @@ namespace Tests
             }
         }
 
-        public static bool Get(string s)
-        {
-            Thread.Sleep(500);
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff ") + s);
-            return true;
-        }
-
-        [Fact]
-        public void ErrorsAreSurfaced()
-        {
-            var tasks = new[]
-            {
-                Task.Run(() => Console.WriteLine("Hello!")), 
-                Task.Run(() =>
-                {
-                    Console.WriteLine("I'm bad...");
-                    throw new Exception();
-                }),
-                Task.Run(() => Console.WriteLine("Goodbye!"))
-            };
-            
-            Assert.Throws<AggregateException>(() => Task.WaitAll(tasks));
-        }
-
         [Fact]
         public void Tasks()
         {
-            var shared = new System.Collections.Concurrent.ConcurrentDictionary<string, bool>();
+            var shared = new ConcurrentDictionary<string, bool>();
 
             Action<string> run = (s) =>
             {
@@ -90,8 +91,6 @@ namespace Tests
             {
                 Console.WriteLine(pair.Key + " - " + pair.Value);
             }
-            
         }
-
     }
 }

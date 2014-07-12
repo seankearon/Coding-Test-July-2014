@@ -9,12 +9,12 @@ namespace GithubAPIQuery
         public static IEnumerable<RepositoryDetails> FromJson(string json)
         {
             var items = JObject.Parse(json)["items"];
-            return items != null ? 
-                items.Select(item => new RepositoryDetails { Name = item["name"].Value<string>(), Description = item["description"].Value<string>() }) 
+            return items != null
+                ? items.Select(item => new RepositoryDetails {Name = item["name"].Value<string>(), Description = item["description"].Value<string>()})
                 : Enumerable.Empty<RepositoryDetails>();
         }
 
-        public string Name { get; set; }
         public string Description { get; set; }
+        public string Name { get; set; }
     }
 }
