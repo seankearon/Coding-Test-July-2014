@@ -11,7 +11,7 @@
         /// <summary>
         /// Gets the number of the next page to be searched.
         /// </summary>
-        public int GetNextSearchPage()
+        public int NextSearchPageNumber()
         {
             lock (nextSearchPageLock)
             {

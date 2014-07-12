@@ -8,8 +8,10 @@ namespace GithubAPIQuery
     {
         public static IEnumerable<RepositoryDetails> FromJson(string json)
         {
-            var o = JObject.Parse(json);
-            return o["items"].Select(item => new RepositoryDetails { Name = Extensions.Value<string>(item["name"]), Description = Extensions.Value<string>(item["description"]) });
+            var items = JObject.Parse(json)["items"];
+            return items != null ? 
+                items.Select(item => new RepositoryDetails { Name = item["name"].Value<string>(), Description = item["description"].Value<string>() }) 
+                : Enumerable.Empty<RepositoryDetails>();
         }
 
         public string Name { get; set; }

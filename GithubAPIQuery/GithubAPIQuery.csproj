@@ -51,9 +51,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryDetails.cs" />
-    <Compile Include="RepositoryQuery.cs" />
+    <Compile Include="RepositorySearch.cs" />
     <Compile Include="RepositorySearcher.cs" />
     <Compile Include="SearchPageCounter.cs" />
+    <Compile Include="StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -30,8 +30,9 @@ namespace Tests
         [Fact]
         public void RepositoryQueryReturnsValues()
         {
-            var query = new RepositoryQuery("raven");
-            foreach (var detail in query.GetDetails().Result)
+            var query = new RepositorySearch("raven");
+            var json = query.GetPage().Result;
+            foreach (var detail in RepositoryDetails.FromJson(json))
             {
                 Console.WriteLine(detail.Name + " - " + detail.Description);
             }
@@ -44,8 +45,25 @@ namespace Tests
             return true;
         }
 
-        [Xunit.FactAttribute]
-        public void FactMethodName()
+        [Fact]
+        public void ErrorsAreSurfaced()
+        {
+            var tasks = new[]
+            {
+                Task.Run(() => Console.WriteLine("Hello!")), 
+                Task.Run(() =>
+                {
+                    Console.WriteLine("I'm bad...");
+                    throw new Exception();
+                }),
+                Task.Run(() => Console.WriteLine("Goodbye!"))
+            };
+            
+            Assert.Throws<AggregateException>(() => Task.WaitAll(tasks));
+        }
+
+        [Fact]
+        public void Tasks()
         {
             var shared = new System.Collections.Concurrent.ConcurrentDictionary<string, bool>();
 
