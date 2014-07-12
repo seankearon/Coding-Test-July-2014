@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Tests
+namespace Tests.Data
 {
     public class TestRepository
     {

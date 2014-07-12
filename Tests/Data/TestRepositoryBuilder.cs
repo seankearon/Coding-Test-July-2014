@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace Tests
+namespace Tests.Data
 {
     public class TestRepositoryBuilder
     {

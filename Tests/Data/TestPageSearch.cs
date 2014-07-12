@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using GithubAPIQuery;
 using Newtonsoft.Json;
 
-namespace Tests
+namespace Tests.Data
 {
     public class TestPageSearch : IPageSearch
     {

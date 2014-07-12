@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using GithubAPIQuery;
 using Newtonsoft.Json;
+using Tests.Data;
 using Xunit;
 
 namespace Tests
