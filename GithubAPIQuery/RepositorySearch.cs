@@ -35,7 +35,7 @@ namespace GithubAPIQuery
         ///     The approach here is use N independent tasks that each retreive a separate page.
         ///     After the page is retreived the task will get other pages until the whole job is complete.
         /// </remarks>
-        public RepositoryDetails[] RunSearch(string criteria, int concurrentQueryCount = 10, int resultsPerPage = 100)
+        public RepositoryDetails[] SearchFor(string criteria, int concurrentQueryCount = 10, int resultsPerPage = 100)
         {
             if (string.IsNullOrWhiteSpace(criteria)) throw new ArgumentException("Criteria required.", "criteria");
             if (concurrentQueryCount < 1) throw new ArgumentException("Must have at least one query.", "concurrentQueryCount");
