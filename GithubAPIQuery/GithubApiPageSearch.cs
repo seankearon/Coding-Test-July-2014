@@ -8,19 +8,19 @@ namespace GithubAPIQuery
     /// </summary>
     public class GithubApiPageSearch : IPageSearch
     {
+        /// <summary>
+        ///     E.g. https://api.github.com/search/repositories?q=raven&per_page=2&page=2
+        /// </summary>
+        private const string UrlFormatStub = @"https://api.github.com/search/repositories?q={0}&page={{0}}&per_page={1}";
+
+        private readonly string _urlFormat;
+
         /// <param name="criteria">The search criteria.</param>
         /// <param name="resultsPerPage">The number of results per page to be requested from the Github API.</param>
         public GithubApiPageSearch(string criteria, int resultsPerPage = 100)
         {
             _urlFormat = string.Format(UrlFormatStub, criteria, resultsPerPage);
         }
-
-        /// <summary>
-        /// E.g. https://api.github.com/search/repositories?q=raven&per_page=2&page=2
-        /// </summary>
-        private const string UrlFormatStub = @"https://api.github.com/search/repositories?q={0}&page={{0}}&per_page={1}";
-
-        private readonly string _urlFormat;
 
         public async Task<string> GetPage(int page = 1)
         {

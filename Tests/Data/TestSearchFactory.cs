@@ -7,6 +7,8 @@ namespace Tests.Data
 {
     public class TestSearchFactory : IPageSearchFactory
     {
+        private readonly TestRepository[] _repositories;
+
         public TestSearchFactory()
             : this(new TestRepositoryBuilder().Build())
         {
@@ -16,8 +18,6 @@ namespace Tests.Data
         {
             _repositories = repositories;
         }
-
-        private readonly TestRepository[] _repositories;
 
         public IEnumerable<IPageSearch> GetSearches(int count, string criteria, int resultsPerPage)
         {

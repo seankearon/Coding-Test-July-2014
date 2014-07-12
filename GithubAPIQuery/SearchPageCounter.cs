@@ -5,8 +5,8 @@
     /// </summary>
     public class SearchPageCounter
     {
-        private int nextSearchPage = 1;
         private readonly object nextSearchPageLock = new object();
+        private int nextSearchPage = 1;
 
         /// <summary>
         ///     Gets the number of the next page to be searched.

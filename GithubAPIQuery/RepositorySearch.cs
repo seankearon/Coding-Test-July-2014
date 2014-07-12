@@ -13,6 +13,15 @@ namespace GithubAPIQuery
     /// </remarks>
     public class RepositorySearch
     {
+        private readonly IPageSearchFactory _factory;
+        private readonly ConcurrentBag<RepositoryDetails> _results = new ConcurrentBag<RepositoryDetails>();
+
+        /// <remarks>This will only ever set to a single value. Hence, no locking required.</remarks>
+        private bool _keepSearching = true;
+
+        private SearchPageCounter _pageCounter;
+        private bool _searching = false;
+
         public RepositorySearch(IPageSearchFactory factory)
         {
             if (_factory == null) throw new ArgumentException("factory");
@@ -22,13 +31,6 @@ namespace GithubAPIQuery
         public RepositorySearch() : this(new PageSearchFactory())
         {
         }
-
-        /// <remarks>This will only ever set to a single value. Hence, no locking required.</remarks>
-        private bool _keepSearching = true;
-        private bool _searching = false;
-        private readonly IPageSearchFactory _factory;
-        private SearchPageCounter _pageCounter;
-        private readonly ConcurrentBag<RepositoryDetails> _results = new ConcurrentBag<RepositoryDetails>();
 
         /// <remarks>
         ///     The approach here is use N independent tasks that each retreive a separate page.
@@ -52,7 +54,7 @@ namespace GithubAPIQuery
                     var json = search.GetPage(pageNumber).Result;
                     if (json.IsApiRateLimitWarning()) throw new ApplicationException("API rate limit exceeded.");
                     HarvestDetails(json);
-                    
+
                     if (!json.HasRepositories())
                     {
                         // A page has no results so assume we're complete. 

@@ -13,18 +13,18 @@ namespace Tests
         [Fact]
         public void RecognisesRateLimitExceededMessage()
         {
-            string rateLimit = File.ReadAllText("rate-limit-message.json");
+            var rateLimit = File.ReadAllText("rate-limit-message.json");
             Assert.True(rateLimit.IsApiRateLimitWarning());
 
-            string other = File.ReadAllText("result-content-with-two-repositories.json");
+            var other = File.ReadAllText("result-content-with-two-repositories.json");
             Assert.False(other.IsApiRateLimitWarning());
         }
 
         [Fact]
         public void RepositoryDetailsAreParsedFromGithubJson()
         {
-            string json = File.ReadAllText("result-content-with-two-repositories.json");
-            RepositoryDetails[] details = RepositoryDetails.FromJson(json).ToArray();
+            var json = File.ReadAllText("result-content-with-two-repositories.json");
+            var details = RepositoryDetails.FromJson(json).ToArray();
 
             Assert.Equal(2, details.Length);
             Assert.NotNull(details[0].Name);
@@ -35,7 +35,7 @@ namespace Tests
         public void SearchPageCounterReturnsIncrementalPageNumbers()
         {
             var counter = new SearchPageCounter();
-            foreach (int i in Enumerable.Range(1, 300))
+            foreach (var i in Enumerable.Range(1, 300))
             {
                 Assert.Equal(i, counter.NextSearchPageNumber());
             }
@@ -45,15 +45,15 @@ namespace Tests
         public void TestRepositoryPagesSerialiseAsExpected()
         {
             var builder = new TestRepositoryBuilder();
-            TestRepository[] repositories = builder.Build();
+            var repositories = builder.Build();
 
-            string json = JsonConvert.SerializeObject(repositories);
+            var json = JsonConvert.SerializeObject(repositories);
             Console.WriteLine(json);
 
             var deserialised = JsonConvert.DeserializeObject<TestRepositoryPage>(json);
             Assert.Equal(repositories.Length, deserialised.Items.Length);
 
-            TestRepositoryPage empty = builder.Empty;
+            var empty = builder.Empty;
             Assert.Equal(builder.TotalCount, empty.TotalCount);
             Assert.Equal(0, empty.Items.Length);
         }
@@ -62,10 +62,10 @@ namespace Tests
         public void TestSearchFactoryReturnsWorkingFakeSearches()
         {
             var factory = new TestSearchFactory();
-            IPageSearch search = factory.GetSearches(1, "raven", 100).Single();
+            var search = factory.GetSearches(1, "raven", 100).Single();
 
-            string json = search.GetPage().Result;
-            RepositoryDetails[] details = RepositoryDetails.FromJson(json).ToArray();
+            var json = search.GetPage().Result;
+            var details = RepositoryDetails.FromJson(json).ToArray();
 
             Assert.Equal(100, details.Length);
         }

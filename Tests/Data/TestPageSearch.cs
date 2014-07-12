@@ -7,6 +7,10 @@ namespace Tests.Data
 {
     public class TestPageSearch : IPageSearch
     {
+        private readonly string _criteria;
+        private readonly TestRepository[] _repositories;
+        private readonly int _resultsPerPage;
+
         public TestPageSearch(string criteria, int resultsPerPage, TestRepository[] repositories)
         {
             _criteria = criteria;
@@ -14,13 +18,9 @@ namespace Tests.Data
             _repositories = repositories;
         }
 
-        private readonly string _criteria;
-        private readonly TestRepository[] _repositories;
-        private readonly int _resultsPerPage;
-
         public Task<string> GetPage(int page = 1)
         {
-            TestRepository[] repositories = _repositories
+            var repositories = _repositories
                 .Where(x => x.Name != null && x.Name.ToLowerInvariant().Contains(_criteria.ToLowerInvariant()))
                 .Skip(_resultsPerPage*(page - 1))
                 .Take(_resultsPerPage)

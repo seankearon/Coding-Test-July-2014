@@ -10,6 +10,16 @@ namespace Tests.Data
             TotalCount = 801;
         }
 
+        public string Criteria { get; set; }
+
+        public TestRepositoryPage Empty
+        {
+            get { return new TestRepositoryPage {TotalCount = TotalCount}; }
+        }
+
+        public bool Incomplete { get; set; }
+        public int TotalCount { get; set; }
+
         public TestRepository[] Build()
         {
             return Enumerable
@@ -27,15 +37,5 @@ namespace Tests.Data
         {
             TotalCount = totalCount;
         }
-
-        public string Criteria { get; set; }
-
-        public TestRepositoryPage Empty
-        {
-            get { return new TestRepositoryPage {TotalCount = TotalCount}; }
-        }
-
-        public bool Incomplete { get; set; }
-        public int TotalCount { get; set; }
     }
 }
