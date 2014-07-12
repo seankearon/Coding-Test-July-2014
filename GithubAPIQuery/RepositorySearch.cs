@@ -1,39 +1,88 @@
-using System.Net.Http;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GithubAPIQuery
 {
-    /// <summary>
-    ///     Searches the Github API for repositories matching a given criteria.
-    /// </summary>
+    /// <remarks>
+    ///     The brief is to optimise for the time spent on the network I/O.
+    ///     <see cref="RepositorySearch" /> achieves this by allowing clients control over
+    ///     the number of concurrent connections and the results per page.
+    /// </remarks>
     public class RepositorySearch
     {
-        /// <param name="criteria">The search criteria.</param>
-        /// <param name="resultsPerPage">The number of results per page to be requested from the Github API.</param>
-        public RepositorySearch(string criteria, int resultsPerPage = 100)
+        public RepositorySearch(IPageSearchFactory factory)
         {
-            _urlFormat = string.Format(UrlFormatStub, criteria, resultsPerPage);
+            if (_factory == null) throw new ArgumentException("factory");
+            _factory = factory;
+        }
+
+        public RepositorySearch() : this(new PageSearchFactory())
+        {
+        }
+
+        /// <remarks>This will only ever set to a single value. Hence, no locking required.</remarks>
+        private bool _keepSearching = true;
+        private bool _searching = false;
+        private readonly IPageSearchFactory _factory;
+        private SearchPageCounter _pageCounter;
+        private readonly ConcurrentBag<RepositoryDetails> _results = new ConcurrentBag<RepositoryDetails>();
+
+        /// <remarks>
+        ///     The approach here is use N independent tasks that each retreive a separate page.
+        ///     After the page is retreived the task will get other pages until the whole job is complete.
+        /// </remarks>
+        public RepositoryDetails[] RunSearch(string criteria, int maxConcurrentQueries = 10, int resultsPerPage = 100)
+        {
+            if (string.IsNullOrWhiteSpace(criteria)) throw new ArgumentException("Criteria required.", "criteria");
+            if (maxConcurrentQueries < 1) throw new ArgumentException("Must have at least one query.", "maxConcurrentQueries");
+            if (_searching) throw new ApplicationException("Search already in progress.");
+            _searching = true;
+
+            _pageCounter = new SearchPageCounter();
+            var searches = GetRepositorySearches(criteria, maxConcurrentQueries, resultsPerPage);
+
+            var tasks = searches.Select(search => Task.Factory.StartNew(() =>
+            {
+                while (_keepSearching)
+                {
+                    var pageNumber = _pageCounter.NextSearchPageNumber();
+                    var json = search.GetPage(pageNumber).Result;
+                    if (json.IsApiRateLimitWarning()) throw new ApplicationException("API rate limit exceeded.");
+                    HarvestDetails(json);
+                    
+                    if (!json.HasRepositories())
+                    {
+                        // A page has no results so assume we're complete. 
+                        _keepSearching = false;
+                    }
+                }
+            })).ToArray();
+
+            Task.WaitAll(tasks);
+            _searching = false;
+            return _results.OrderBy(x => x.Name).ToArray();
+        }
+
+        private IEnumerable<GithubApiPageSearch> GetRepositorySearches(string criteria, int maxConcurrentQueries, int resultsPerPage)
+        {
+            return Enumerable
+                .Range(1, maxConcurrentQueries)
+                .Select(i => new GithubApiPageSearch(criteria, resultsPerPage));
         }
 
         /// <summary>
-        /// E.g. https://api.github.com/search/repositories?q=raven&per_page=2&page=2
+        ///     Gets and stores the repository details from the response JSON.
         /// </summary>
-        private const string UrlFormatStub = @"https://api.github.com/search/repositories?q={0}&page={{0}}&per_page={1}";
-
-        private readonly string _urlFormat;
-
-        /// <summary>
-        ///     Gets the JSON reponse for a given page.
-        /// </summary>
-        public async Task<string> GetPage(int page = 1)
+        /// <param name="json">The response JSON from the Github API.</param>
+        private void HarvestDetails(string json)
         {
-            var url = string.Format(_urlFormat, page);
-            using (var client = new HttpClient())
+            var details = RepositoryDetails.FromJson(json);
+            foreach (var detail in details)
             {
-                // Github requires the user agent header to be set.  See here: https://developer.github.com/v3/#user-agent-required
-                client.DefaultRequestHeaders.Add("User-Agent", "Seans-Code");
-                var task = await client.GetAsync(url);
-                return await task.Content.ReadAsStringAsync();
+                _results.Add(detail);
             }
         }
     }

@@ -14,6 +14,15 @@ namespace GithubAPIQuery
         }
 
         /// <summary>
+        ///     Determines whether the search result JSON contains any repositories.
+        /// </summary>
+        public static bool HasRepositories(this string json)
+        {
+            var items = JObject.Parse(json)["items"];
+            return items != null && items.HasValues;
+        }
+
+        /// <summary>
         ///     Github limits the API query rate.  Example warning response in Tests\rate-limit-message.json.
         /// </summary>
         public static bool IsApiRateLimitWarning(this string json)
