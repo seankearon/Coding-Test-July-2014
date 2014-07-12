@@ -11,6 +11,19 @@ namespace Tests
     public class UnitTests
     {
         [Fact]
+        public void RepositorySearcherReturnsExpectedResults()
+        {
+            var repositories = new TestRepositoryBuilder().Build();
+            var factory = new TestSearchFactory(repositories);
+            
+            var searcher = new RepositorySearch(factory);
+            var results = searcher.RunSearch("raven");
+
+            Assert.NotEmpty(results);
+            Assert.Equal(repositories.Length, results.Length);
+        }
+
+        [Fact]
         public void RecognisesRateLimitExceededMessage()
         {
             var rateLimit = File.ReadAllText("rate-limit-message.json");
@@ -50,8 +63,8 @@ namespace Tests
             var json = JsonConvert.SerializeObject(repositories);
             Console.WriteLine(json);
 
-            var deserialised = JsonConvert.DeserializeObject<TestRepositoryPage>(json);
-            Assert.Equal(repositories.Length, deserialised.Items.Length);
+            var deserialised = JsonConvert.DeserializeObject<TestRepository[]>(json);
+            Assert.Equal(repositories.Length, deserialised.Length);
 
             var empty = builder.Empty;
             Assert.Equal(builder.TotalCount, empty.TotalCount);
@@ -61,7 +74,7 @@ namespace Tests
         [Fact]
         public void TestSearchFactoryReturnsWorkingFakeSearches()
         {
-            var factory = new TestSearchFactory();
+            var factory = new TestSearchFactory(new TestRepositoryBuilder().Build());
             var search = factory.GetSearches(1, "raven", 100).Single();
 
             var json = search.GetPage().Result;

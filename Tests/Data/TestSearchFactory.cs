@@ -9,11 +9,6 @@ namespace Tests.Data
     {
         private readonly TestRepository[] _repositories;
 
-        public TestSearchFactory()
-            : this(new TestRepositoryBuilder().Build())
-        {
-        }
-
         public TestSearchFactory(TestRepository[] repositories)
         {
             _repositories = repositories;
