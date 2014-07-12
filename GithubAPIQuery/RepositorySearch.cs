@@ -24,7 +24,7 @@ namespace GithubAPIQuery
 
         public RepositorySearch(IPageSearchFactory factory)
         {
-            if (_factory == null) throw new ArgumentException("factory");
+            if (factory == null) throw new ArgumentException("factory");
             _factory = factory;
         }
 
