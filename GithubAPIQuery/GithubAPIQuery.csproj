@@ -54,7 +54,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryDetails.cs" />
-    <Compile Include="GithubApiPageSearch.cs" />
+    <Compile Include="GithubPageSearch.cs" />
     <Compile Include="RepositorySearch.cs" />
     <Compile Include="SearchPageCounter.cs" />
     <Compile Include="StringExtensions.cs" />

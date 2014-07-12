@@ -55,7 +55,7 @@ namespace Tests
         [Fact]
         public void RepositoryQueryReturnsValues()
         {
-            var query = new GithubApiPageSearch("raven");
+            var query = new GithubPageSearch("raven");
             var json = query.GetPage().Result;
             foreach (var detail in RepositoryDetails.FromJson(json))
             {

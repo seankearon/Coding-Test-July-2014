@@ -6,7 +6,7 @@ namespace GithubAPIQuery
     /// <summary>
     ///     Searches the Github API for repositories matching a given criteria, retreiving a single page of results.
     /// </summary>
-    public class GithubApiPageSearch : IPageSearch
+    public class GithubPageSearch : IPageSearch
     {
         /// <summary>
         ///     E.g. https://api.github.com/search/repositories?q=raven&per_page=2&page=2
@@ -17,7 +17,7 @@ namespace GithubAPIQuery
 
         /// <param name="criteria">The search criteria.</param>
         /// <param name="resultsPerPage">The number of results per page to be requested from the Github API.</param>
-        public GithubApiPageSearch(string criteria, int resultsPerPage = 100)
+        public GithubPageSearch(string criteria, int resultsPerPage = 100)
         {
             _urlFormat = string.Format(UrlFormatStub, criteria, resultsPerPage);
         }

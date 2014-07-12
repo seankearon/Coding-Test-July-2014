@@ -10,7 +10,7 @@ namespace Tests
         [Fact]
         public void RepositorySearchReturnsSpecifiedNumberOfResults()
         {
-            var query = new GithubApiPageSearch("raven", 4);
+            var query = new GithubPageSearch("raven", 4);
             var json = query.GetPage().Result;
 
             var details = RepositoryDetails.FromJson(json).ToArray();
@@ -29,7 +29,7 @@ namespace Tests
                 Console.WriteLine("    {0} - {1}", repository.Name, repository.Description);
             }
 
-            var metadata = new GithubApiPageSearch("raven", 1).GetPage().Result;
+            var metadata = new GithubPageSearch("raven", 1).GetPage().Result;
             var expectedResultCount = metadata.GetApiTotalCount();
             Assert.Equal(expectedResultCount, results.Length);
         }
