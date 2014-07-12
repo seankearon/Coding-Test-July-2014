@@ -1,12 +1,12 @@
 Coding-Test-July-2014
 =====================
 
-Contains the results of a coding test.  Please note the following issue:
+Contains the results of a coding test.  Please note that the search term differs from the one given in the brief.  This is discussed in the following issue:
 
 https://github.com/seankearon/Coding-Test-July-2014/issues/1
 
-
-The brief for which was:
+Brief
+=====================
 
 Using GitHub public API, Repositories Search 
 
