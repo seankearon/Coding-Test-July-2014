@@ -7,7 +7,10 @@ using Xunit;
 
 namespace Tests
 {
-    public class TestInfrastructure
+    /// <summary>
+    /// These tests assert on the infrastructure used for the testing of the "real" code.
+    /// </summary>
+    public class InfrastructureTests
     {
         [Fact]
         public void TestRepositoryPagesSerialiseAsExpected()

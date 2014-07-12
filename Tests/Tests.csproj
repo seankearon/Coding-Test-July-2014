@@ -57,7 +57,7 @@
     <Compile Include="Data\TestSearchFactory.cs" />
     <Compile Include="IntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestInfrastructure.cs" />
+    <Compile Include="InfrastructureTests.cs" />
     <Compile Include="UnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
